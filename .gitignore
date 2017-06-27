@@ -70,3 +70,5 @@ __tests__/
 .babelrc
 .buckconfig
 .flowconfig
+icons
+npm-debug.log.*
