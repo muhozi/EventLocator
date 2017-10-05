@@ -110,7 +110,7 @@ class Reserve extends React.Component {
   sendReservation() {
     if(this.validate()){
       if(this.state.isConnected){
-        fetch('http://eventlocator.regeza.com/api/reserve/'+this.props.event_id, {
+        fetch('http://eventlocate.herokuapp.com/api/reserve/'+this.props.event_id, {
           //fetch('http://192.168.244.2/eventLocator/public/api/reserve/'+this.props.event_id, {
             method: 'POST',
             headers:{'Accept':'application/json','Content-Type':'application/json'},

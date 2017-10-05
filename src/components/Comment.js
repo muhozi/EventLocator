@@ -112,7 +112,7 @@ class Comment extends React.Component {
   sendComment() {
     if(this.validate()){
       if(this.state.isConnected){
-        fetch('http://eventlocator.regeza.com/api/comment/'+this.props.event_id, {
+        fetch('http://eventlocate.herokuapp.com/api/comment/'+this.props.event_id, {
           //fetch('http://192.168.244.2/eventLocator/public/api/comment/'+this.props.event_id, {
             method: 'POST',
             headers:{'Accept':'application/json','Content-Type':'application/json'},

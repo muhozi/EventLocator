@@ -39,7 +39,7 @@ class SingleEvent extends React.Component {
     NetInfo.isConnected.fetch().done(
         (isConnected) => { this.setState({isConnected}); }
     );
-     fetch('http://eventlocator.regeza.com/api/events/'+this.props.event_id,{method: 'GET'})
+     fetch('http://eventlocate.herokuapp.com/api/events/'+this.props.event_id,{method: 'GET'})
      //fetch('http://192.168.244.2/eventLocator/public/api/events/'+this.props.event_id,{method: 'GET'})
             .then((response) => response.json())
             .then((responseData) => {
