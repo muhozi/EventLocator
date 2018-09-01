@@ -33,7 +33,7 @@ class Events extends React.Component {
   }
   componentDidMount() {
     NetInfo.isConnected.addEventListener(
-        'change',
+        'connectionChange',
         this._handleConnectivityChange
     );
     NetInfo.isConnected.fetch().done(
@@ -83,7 +83,7 @@ class Events extends React.Component {
            />
         {(this.state.respoData)?<FlatList
           data={this.state.respoData}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({item}) => 
             <TouchableHighlight onPress={this.viewEvent.bind(this, item.id,item.lat,item.lng)} underlayColor={"rgba(25, 43, 62, 0.1)"}>
             <View style={{padding:10,borderBottomWidth:1,borderBottomColor:'rgba(0,0,0,0.1)'}}>

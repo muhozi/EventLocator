@@ -37,7 +37,7 @@ class Comment extends React.Component {
   }
   componentDidMount() {
     NetInfo.isConnected.addEventListener(
-        'change',
+        'connectionChange',
         this._handleConnectivityChange
     );
     NetInfo.isConnected.fetch().done(
