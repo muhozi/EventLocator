@@ -1,4 +1,3 @@
-'use strict';
 import React from 'react';
 import {
   StyleSheet,
@@ -10,7 +9,7 @@ import {
   StatusBar,
   NetInfo
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Actions } from 'react-native-router-flux';
 import Styles from './../styles/Styles';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -32,7 +31,7 @@ class SingleEvent extends React.Component {
       this.setState({ isConnected });
     });
     fetch(
-      'http://eventlocate.herokuapp.com/api/events/' + this.props.event_id,
+      'https://eventlocate.herokuapp.com/api/events/' + this.props.event_id,
       { method: 'GET' }
     )
       //fetch('http://192.168.244.2/eventLocator/public/api/events/'+this.props.event_id,{method: 'GET'})
@@ -42,7 +41,6 @@ class SingleEvent extends React.Component {
         var b = [(latitude: responseData.lat), (longitude: responseData.lng)];
         var a = getCoordinates(b);
         //this.setState({coordinates:a.latitude})
-        console.log('dfdtfghjfgvhbnfgvbhnf');
       })
       .catch(error => {
         this.setState({ statusColor: 'rgba(255,0,0,1)' });
@@ -182,6 +180,7 @@ class SingleEvent extends React.Component {
         </View>
         {this.state.eventData.lat ? (
           <MapView.Animated
+            provider={PROVIDER_GOOGLE}
             style={styles.map}
             initialRegion={{
               latitude: parseFloat(this.state.eventData.lat),

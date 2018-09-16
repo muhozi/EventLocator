@@ -39,7 +39,7 @@ class Events extends React.Component {
     NetInfo.isConnected.fetch().done(
         (isConnected) => { this.setState({isConnected}); }
     );
-    fetch('http://eventlocate.herokuapp.com/api/events',{method: 'GET'})
+    fetch('https://eventlocate.herokuapp.com/api/events',{method: 'GET'})
     //fetch('http://192.168.244.2/eventLocator/public/api/events',{method: 'GET'})
             .then((response) => response.json())
             .then((responseData) => {

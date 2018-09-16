@@ -1,83 +1,82 @@
-'use strict';
-import {
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import values from './Values';
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
-const style = StyleSheet.create({
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+const styles = StyleSheet.create({
   //Splash Container styles:
   root: {
-    backgroundColor: values.active_color,  
+    backgroundColor: values.active_color
   },
-  splashContainer:{
+  splashContainer: {
     backgroundColor: '#fff',
     flex: 1,
     flexDirection: 'column',
-    justifyContent:'center',
-    alignItems:'center',
+    justifyContent: 'center',
+    alignItems: 'center'
     //paddingBottom:53,
   },
-  map:{
+  container: {
+    flex: 12,
+    flexDirection: 'column',
+    backgroundColor: 'rgba(0,0,0,0)'
+  },
+  map: {
     position: 'absolute',
     top: 53,
     bottom: 0,
     left: 0,
     right: 0,
-    flex:12,
+    flex: 12
   },
-  welcome_logo_container:{
-    flex:1,
-    alignItems:'flex-end',
-    justifyContent:'center',
-    flexDirection: 'row',
+  welcome_logo_container: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    flexDirection: 'row'
   },
-  welcome_logo:{
-    height:windowHeight * 1/5,
-    resizeMode:'contain',
+  welcome_logo: {
+    height: (windowHeight * 1) / 5,
+    resizeMode: 'contain'
   },
-  form_head:{
-    flex:0.1,
-    alignItems:'center',
-    justifyContent:'center',
+  form_head: {
+    flex: 0.1,
+    alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: values.active_color,
     paddingTop: 10,
-    paddingBottom: 20,
+    paddingBottom: 20
   },
-  title:{
-    justifyContent:'center',
-    fontSize:20,
-    color:'#fff',
+  title: {
+    justifyContent: 'center',
+    fontSize: 20,
+    color: '#fff'
   },
   container: {
     flex: 4,
-    //paddingTop: 54,
     backgroundColor: '#ffffff',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   header: {
-    flex:1,
-    justifyContent: 'center',
+    flex: 1,
+    justifyContent: 'center'
   },
   headerText: {
     textAlign: 'center',
+    justifyContent: 'center',
     fontSize: 20,
-
+    color: values.primary
   },
   body: {
-    flex:12,
-    //borderTopWidth: 0.2,
-    //borderColor: '#ddd',
+    flex: 12,
     paddingTop: 25,
-    paddingBottom: 100,
+    paddingBottom: 100
   },
-   status: {
+  status: {
     flexDirection: 'row',
     marginTop: 20,
     marginBottom: 0,
-    borderWidth: 0, 
+    borderWidth: 0
   },
   formRowText: {
     flexDirection: 'row',
@@ -86,51 +85,51 @@ const style = StyleSheet.create({
     marginTop: 20,
     marginBottom: 5,
     alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-
+    justifyContent: 'flex-start'
   },
-  formInputContainer: {
+  formRow: {
     flex: 6,
-    //borderColor: 'rgba(0,0,0,0.5)',
-    //borderWidth: 0.4,
-    //padding: 6,
-    //paddingLeft: 6,
-    //borderTopRightRadius: 15,
-    //borderBottomRightRadius: 15,
-    //paddingBottom: 1,
-    //borderRadius: 5,
-    //borderBottomWidth: 0.2,
-    //borderRightWidth: 0.2,
-    //borderTopWidth: 0.2,
-    //borderColor: '#607d8b',
-    //backgroundColor: 'rgba(0,0,0,0.04)',
-    bottom:0.2,
-    top:0.2,
-    right:0.2,
+    backgroundColor: '#fff',
+    borderColor: 'rgba(0,0,0,0.5)',
+    borderWidth: 0.4,
+    padding: 6,
+    paddingLeft: 6,
+    borderTopRightRadius: 15,
+    borderBottomRightRadius: 15,
+    paddingBottom: 1,
+    borderRadius: 5,
+    borderBottomWidth: 0.2,
+    borderRightWidth: 0.2,
+    borderTopWidth: 0.2,
+    borderColor: '#607d8b',
+    bottom: 0.2,
+    top: 0.2,
+    right: 0.2
   },
   descriptionContainer: {
     flexDirection: 'row',
     paddingLeft: 0,
-    //borderWidth: 0.2,
-    //borderTopRightRadius: 15,
-    //borderBottomRightRadius: 15,
-    //borderBottomLeftRadius: 15,
-    //backgroundColor: 'rgba(0,0,0,0.04)',
-    //borderColor: 'rgba(0,0,0,0.04)',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start',
+    borderWidth: 0.2,
+    borderTopRightRadius: 15,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
+    paddingTop: 3,
+    borderColor: 'rgba(0,0,0,0.04)',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
   },
-   description: {
+  description: {
     flex: 1,
     flexDirection: 'row',
     borderWidth: 0,
-    //borderTopRightRadius: 15,
-    //borderBottomRightRadius: 15,
-    //borderBottomLeftRadius: 15,
+    borderTopRightRadius: 15,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
     alignItems: 'flex-end',
     justifyContent: 'flex-start',
     textAlignVertical: 'top',
-    //paddingLeft: 15,
+    paddingLeft: 15,
+    minHeight: 120
   },
   formInputError: {
     flex: 6,
@@ -144,13 +143,13 @@ const style = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 0, 0, 1)',
     backgroundColor: 'rgba(0,0,0,0.04)',
-    bottom:0,
+    bottom: 0
   },
   formButtons: {
     alignItems: 'center',
     marginTop: 15,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   button: {
     flex: 1,
@@ -160,77 +159,80 @@ const style = StyleSheet.create({
     borderRadius: 15,
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: values.active_color,
+    backgroundColor: values.active_color
   },
   buttonText: {
-    color:'#fff',
-    fontWeight: 'bold',
+    color: '#fff',
+    fontWeight: 'bold'
   },
   login: {
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 20,
     paddingTop: 10,
-    paddingBottom: 10,  
+    paddingBottom: 10
   },
-  formRow:{
-    //flex:1,
+  formRow: {
     flexDirection: 'row',
     marginLeft: 20,
     marginRight: 30,
     marginTop: 10,
-    //marginBottom: 5,
-    //borderWidth: 0.5,
-    //borderRadius: 15,
-    //borderColor: 'rgba(0,0,0,0.1)', 
+    backgroundColor: '#fff',
+    marginBottom: 5
   },
-    formHeader:{
-    //flex:1,
+  formBlock: {
     flexDirection: 'row',
-    //marginLeft: 30,
-    //marginRight: 30,
+    marginLeft: 20,
+    marginRight: 30,
     marginTop: 20,
     marginBottom: 20,
-    //borderWidth: 0.5,
-    //borderRadius: 15,
-    //borderColor: 'rgba(0,0,0,0.1)', 
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  formInput:{
-    flex: 5,
-    //borderColor: 'rgba(0,0,0,0.5)',
-    //borderWidth: 0.4,
-    //padding: 6,
-    //paddingLeft: 6,
-
-    //paddingBottom: 1,
-    //borderRadius: 5,
-    //bottom:0.2,
-    //top:0.2,
-    //right:0.2,
-
+  btn: {
+    backgroundColor: 'rgba(25, 43, 62, 0.9)',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginLeft: 20
   },
-  formLabel:{
+  formHeader: {
+    flexDirection: 'row',
+    marginTop: 20,
+    marginBottom: 20
+  },
+  formInput: {
+    flex: 5
+  },
+  formLabel: {
     flex: 0.5,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
     //borderTopLeftRadius: 15,
     //borderBottomLeftRadius: 15,
     //backgroundColor: 'rgba(0,0,0,0.04)',
   },
-  formLabelDescription:{
+  formLabelDescription: {
     flex: 0.5,
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: 10,
-    //borderTopLeftRadius: 15,
-    //borderBottomLeftRadius: 15,
-    //backgroundColor: 'rgba(0,0,0,0.04)',
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15
+    // backgroundColor: 'rgba(0,0,0,0.04)',
   },
   labelText: {
-    color:'rgba(25, 43, 62, 0.9)',
+    color: 'rgba(25, 43, 62, 0.9)'
   },
-  formInputText:{
+  formInputText: {
     //fontSize: 50,
+    backgroundColor: '#fff',
+    padding: 10
   }
 });
-export default style;
+export default styles;

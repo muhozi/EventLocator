@@ -201,5 +201,6 @@ xcuserdata/
 *.xccheckout
 *.xcscmblueprint
 *.keystore
-
+## Ignore pods folder
+ios/Pods
 ## Reference : https://www.gitignore.io/api/reactnative
