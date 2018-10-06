@@ -1,4 +1,4 @@
-package com.eventlocator;
+package com.EventLocator;
 
 import com.facebook.react.ReactActivity;
 

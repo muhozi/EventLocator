@@ -1,4 +1,4 @@
-package com.eventlocator;
+package com.EventLocator;
 
 import android.app.Application;
 
@@ -20,17 +20,19 @@ public class MainApplication extends Application implements ReactApplication {
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
-     //@Override
-      protected String getMainComponentName() {
-        return "eventlocator"; //<- put your app name
-      }
-    //@Override
+
+    @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new VectorIconsPackage(),
             new MapsPackage()
       );
+    }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
     }
   };
 

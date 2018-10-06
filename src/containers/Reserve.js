@@ -122,7 +122,7 @@ class Reserve extends React.Component {
         fetch(
           'http://eventlocate.herokuapp.com/api/reserve/' + this.props.event_id,
           {
-            //fetch('http://192.168.244.2/eventLocator/public/api/reserve/'+this.props.event_id, {
+            //fetch('http://192.168.244.2/EventLocator/public/api/reserve/'+this.props.event_id, {
             method: 'POST',
             headers: {
               Accept: 'application/json',

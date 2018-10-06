@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "module-resolver": "^1.0.0",
-    "react": "16.4.1",
-    "react-native": "0.56.0",
+    "react": "16.5.0",
+    "react-native": "0.57.0",
     "react-native-global-props": "^1.1.3",
     "react-native-maps": "^0.21.0",
     "react-native-router-flux": "^4.0.1",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "babel-jest": "19.0.0",
-    "babel-preset-react-native": "5.0.2",
+    "babel-preset-react-native": "4.0.0",
     "jest": "19.0.2",
     "prop-types": "^15.6.2",
     "react-test-renderer": "^16.4.2"
