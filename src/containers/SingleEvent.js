@@ -1,80 +1,46 @@
 import React from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableHighlight,
-  ScrollView,
-  StatusBar,
-  NetInfo
+  Text, View, TouchableHighlight, StatusBar,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Actions } from 'react-native-router-flux';
-import Styles from './../styles/Styles';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Styles from '../styles/Styles';
+
 class SingleEvent extends React.Component {
   state = {
-    isConnected: null,
-    responseMsg: '',
     eventData: '',
-    coordinates: ''
   };
+
   componentWillMount() {}
 
   componentDidMount() {
-    NetInfo.isConnected.addEventListener(
-      'connectionChange',
-      this._handleConnectivityChange
-    );
-    NetInfo.isConnected.fetch().done(isConnected => {
-      this.setState({ isConnected });
-    });
-    fetch(
-      'https://eventlocate.herokuapp.com/api/events/' + this.props.event_id,
-      { method: 'GET' }
-    )
-      //fetch('http://192.168.244.2/EventLocator/public/api/events/'+this.props.event_id,{method: 'GET'})
+    const { eventId } = this.props;
+    fetch(`https://eventlocate.herokuapp.com/api/events/${eventId}`, { method: 'GET' })
       .then(response => response.json())
-      .then(responseData => {
+      .then((responseData) => {
         this.setState({ eventData: responseData });
-        var b = [(latitude: responseData.lat), (longitude: responseData.lng)];
-        var a = getCoordinates(b);
-        //this.setState({coordinates:a.latitude})
       })
-      .catch(error => {
-        this.setState({ statusColor: 'rgba(255,0,0,1)' });
-        this.setState({ responseMsg: 'Internet network failed !' });
-        //console.log(error)
+      .catch(() => {
+        alert('Something went wrong!');
       })
       .done();
-    //console.log(this.state.respoData);
   }
 
-  componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener(
-      'change',
-      this._handleConnectivityChange
-    );
-  }
-
-  _handleConnectivityChange = isConnected => {
-    this.setState({
-      isConnected
-    });
-  };
   onLayout(e) {
     const {
       nativeEvent: {
-        layout: { height }
-      }
+        layout: { height },
+      },
     } = e;
     this.height = height;
     this.forceUpdate();
   }
-  //Send Report to DB
-  //Render View
+
   render() {
+    const { eventData } = this.state;
+    const styles = Styles;
     return (
       <View style={{ flex: 1, paddingTop: 0, flexDirection: 'row' }}>
         <StatusBar
@@ -87,12 +53,12 @@ class SingleEvent extends React.Component {
             backgroundColor: 'rgba(25, 43, 62, 0.9)',
             flex: 1,
             flexDirection: 'row',
-            height: 53
+            height: 53,
           }}
         >
           <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 10 }}>
             <TouchableHighlight
-              underlayColor={'rgba(0,0,0,0)'}
+              underlayColor="rgba(0,0,0,0)"
               onPress={() => {
                 Actions.pop();
               }}
@@ -104,24 +70,20 @@ class SingleEvent extends React.Component {
               </View>
             </TouchableHighlight>
           </View>
-          <View
-            style={{ flex: 9, justifyContent: 'center', flexDirection: 'row' }}
-          >
+          <View style={{ flex: 9, justifyContent: 'center', flexDirection: 'row' }}>
             <View
               style={{
                 flex: 4,
                 justifyContent: 'center',
                 alignItems: 'flex-end',
-                paddingRight: 10
+                paddingRight: 10,
               }}
             >
               <TouchableHighlight
-                underlayColor={'rgba(255,255,255,0.3)'}
-                onPress={() => {
-                  this.state.eventData.id
-                    ? Actions.reserve({ event_id: this.state.eventData.id })
-                    : null;
-                }}
+                underlayColor="rgba(255,255,255,0.3)"
+                onPress={() => (
+                  eventData.id ? Actions.reserve({ eventId: eventData.id }) : null
+                )}
                 style={{ borderRadius: 5 }}
               >
                 <Text
@@ -134,7 +96,7 @@ class SingleEvent extends React.Component {
                     paddingBottom: 5,
                     backgroundColor: 'rgba(255,255,255,0.5)',
                     paddingLeft: 10,
-                    paddingRight: 10
+                    paddingRight: 10,
                   }}
                 >
                   Reserve
@@ -147,16 +109,14 @@ class SingleEvent extends React.Component {
                 flex: 5,
                 justifyContent: 'center',
                 alignItems: 'flex-start',
-                paddingLeft: 10
+                paddingLeft: 10,
               }}
             >
               <TouchableHighlight
-                underlayColor={'rgba(255,255,255,0.3)'}
-                onPress={() => {
-                  this.state.eventData.id
-                    ? Actions.comment({ event_id: this.state.eventData.id })
-                    : null;
-                }}
+                underlayColor="rgba(255,255,255,0.3)"
+                onPress={() => (
+                  eventData.id ? Actions.comment({ eventId: eventData.id }) : null
+                )}
                 style={{ borderRadius: 5 }}
               >
                 <Text
@@ -169,7 +129,7 @@ class SingleEvent extends React.Component {
                     paddingBottom: 5,
                     backgroundColor: 'rgba(255,255,255,0.5)',
                     paddingLeft: 10,
-                    paddingRight: 10
+                    paddingRight: 10,
                   }}
                 >
                   Comment
@@ -178,24 +138,24 @@ class SingleEvent extends React.Component {
             </View>
           </View>
         </View>
-        {this.state.eventData.lat ? (
+        {eventData.lat ? (
           <MapView.Animated
             provider={PROVIDER_GOOGLE}
             style={styles.map}
             initialRegion={{
-              latitude: parseFloat(this.state.eventData.lat),
-              longitude: parseFloat(this.state.eventData.lng),
+              latitude: parseFloat(eventData.lat),
+              longitude: parseFloat(eventData.lng),
               latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
+              longitudeDelta: 0.0421,
             }}
           >
             <MapView.Marker
               coordinate={{
-                longitude: parseFloat(this.state.eventData.lng),
-                latitude: parseFloat(this.state.eventData.lat)
+                longitude: parseFloat(eventData.lng),
+                latitude: parseFloat(eventData.lat),
               }}
-              title={'Location'}
-              description={this.state.eventData.formatted_address}
+              title="Location"
+              description={eventData.formatted_address}
             >
               <View
                 style={{
@@ -207,7 +167,7 @@ class SingleEvent extends React.Component {
                   justifyContent: 'center',
                   borderWidth: 1,
                   borderColor: 'rgba(25, 43, 62, 0.9)',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
                 }}
               >
                 <View
@@ -217,7 +177,7 @@ class SingleEvent extends React.Component {
                     width: 20,
                     borderRadius: 20 / 2,
                     borderWidth: 1,
-                    borderColor: '#fff'
+                    borderColor: '#fff',
                   }}
                 />
               </View>
@@ -228,5 +188,9 @@ class SingleEvent extends React.Component {
     );
   }
 }
-const styles = Styles;
+
+SingleEvent.propTypes = {
+  eventId: PropTypes.number.isRequired,
+};
+
 export default SingleEvent;

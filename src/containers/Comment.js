@@ -1,143 +1,127 @@
 import React from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableHighlight,
-  ScrollView,
-  StatusBar,
-  NetInfo
+  Text, View, TextInput, ScrollView, StatusBar, NetInfo,
 } from 'react-native';
-import MapView from 'react-native-maps';
-import { Actions, Modal } from 'react-native-router-flux';
-import styles from './../styles/Styles';
+import PropTypes from 'prop-types';
+import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import values from '../styles/Values';
-import { Button } from '../components/Form';
+import styles from '../styles/Styles';
+import Button from '../components/Form';
 
 class Comment extends React.Component {
   state = {
     isConnected: null,
     responseMsg: '',
-    respoData: '',
     firstname: '',
     lastname: '',
     email: '',
     comment: '',
     statusColor: 'green',
-    traffic: 0
+    traffic: 0,
   };
+
   componentWillMount() {}
+
   componentDidMount() {
-    NetInfo.isConnected.addEventListener(
-      'connectionChange',
-      this._handleConnectivityChange
-    );
-    NetInfo.isConnected.fetch().done(isConnected => {
+    NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    NetInfo.isConnected.fetch().done((isConnected) => {
       this.setState({ isConnected });
     });
   }
+
   componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener(
-      'change',
-      this._handleConnectivityChange
-    );
+    NetInfo.isConnected.removeEventListener('change', this.handleConnectivityChange);
   }
 
-  _handleConnectivityChange = isConnected => {
-    this.setState({
-      isConnected
-    });
-  };
   onLayout(e) {
     const {
       nativeEvent: {
-        layout: { height }
-      }
+        layout: { height },
+      },
     } = e;
     this.height = height;
     this.forceUpdate();
   }
-  //Validate
+
+  handleConnectivityChange = (isConnected) => {
+    this.setState({
+      isConnected,
+    });
+  };
+
   validate() {
-    if (
-      this.state.firstname == '' ||
-      this.state.lastname == '' ||
-      this.state.email == '' ||
-      this.state.comment == ''
-    ) {
+    const {
+      firstname, lastname, email, comment,
+    } = this.state;
+    if (firstname === '' || lastname === '' || email === '' || comment === '') {
       this.setState({
         responseMsg: 'Please fill all fields',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else if (
-      /[^a-zA-Z ]/.test(this.state.firstname) ||
-      this.state.firstname.length < 2
-    ) {
+    }
+    if (/[^a-zA-Z ]/.test(firstname) || firstname.length < 2) {
       this.setState({
         responseMsg: 'Please enter valid name (firsname)',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else if (
-      /[^a-zA-Z ]/.test(this.state.lastname) ||
-      this.state.lastname.length < 2
-    ) {
+    }
+    if (/[^a-zA-Z ]/.test(lastname) || lastname.length < 2) {
       this.setState({
         responseMsg: 'Please enter valid name (lastname)',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else if (
-      !/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        this.state.email
+    }
+    if (
+      !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        email,
       )
     ) {
       this.setState({
         responseMsg: 'Please enter a valid email address',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else if (this.state.comment.length < 10) {
+    }
+    if (comment.length < 10) {
       this.setState({
         responseMsg: 'Please enter a valid comment \n at least 10 characters',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else {
-      this.setState({
-        statusColor: 'green',
-        responseMsg: 'Sending ...',
-        traffic: 1
-      });
-      return true;
     }
+    this.setState({
+      statusColor: 'green',
+      responseMsg: 'Sending ...',
+      traffic: 1,
+    });
+    return true;
   }
+
   sendComment() {
+    const {
+      firstname, lastname, email, comment, isConnected,
+    } = this.state;
+    const { eventId } = this.props;
     if (this.validate()) {
-      if (this.state.isConnected) {
-        fetch(
-          'https://eventlocate.herokuapp.com/api/comment/' +
-            this.props.event_id,
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              firstname: this.state.firstname,
-              lastname: this.state.lastname,
-              email: this.state.email,
-              comment: this.state.comment
-            })
-          }
-        )
+      if (isConnected) {
+        fetch(`https://eventlocate.herokuapp.com/api/comment/${eventId}`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstname,
+            lastname,
+            email,
+            comment,
+          }),
+        })
           .then(response => response.json())
-          .then(responseData => {
+          .then((responseData) => {
             this.setState({
               firstname: '',
               lastname: '',
@@ -145,40 +129,37 @@ class Comment extends React.Component {
               comment: '',
               responseMsg: responseData.message,
               statusColor: 'green',
-              traffic: 0
+              traffic: 0,
             });
           })
-          .catch(error => {
+          .catch(() => {
             this.setState({
               statusColor: 'rgba(255,0,0,1)',
               responseMsg: 'A problem occurs, Try again later.',
-              traffic: 0
+              traffic: 0,
             });
           })
           .done();
       } else {
         this.setState({
-          responseMsg: 'Check your internet network \n and try again'
+          responseMsg: 'Check your internet network \n and try again',
         });
         this.setState({ statusColor: 'red' });
       }
     }
   }
-  //Render View
+
   render() {
-    const { statusColor, responseMsg } = this.state;
+    const {
+      statusColor, responseMsg, firstname, lastname, email, comment, traffic,
+    } = this.state;
     return (
       <View style={styles.page}>
-        <StatusBar
-          backgroundColor="rgba(25, 43, 62, 0.9)"
-          barStyle="light-content"
-        />
+        <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" barStyle="light-content" />
         <ScrollView>
           <View style={{ flex: 4, flexDirection: 'column' }}>
             <View style={styles.formBlock}>
-              <Text style={styles.header}>
-                Comment on the event
-              </Text>
+              <Text style={styles.header}>Comment on the event</Text>
             </View>
             <View style={styles.formRow}>
               <View style={styles.formLabel}>
@@ -190,10 +171,10 @@ class Comment extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Firstname..."
-                  onChangeText={fname => {
+                  onChangeText={(fname) => {
                     this.setState({ firstname: fname });
                   }}
-                  value={this.state.firstname}
+                  value={firstname}
                   autoCorrect={false}
                 />
               </View>
@@ -208,10 +189,10 @@ class Comment extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Lastname..."
-                  onChangeText={lname => {
+                  onChangeText={(lname) => {
                     this.setState({ lastname: lname });
                   }}
-                  value={this.state.lastname}
+                  value={lastname}
                   autoCorrect={false}
                 />
               </View>
@@ -226,10 +207,10 @@ class Comment extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Email..."
-                  onChangeText={value => {
+                  onChangeText={(value) => {
                     this.setState({ email: value });
                   }}
-                  value={this.state.email}
+                  value={email}
                   autoCorrect={false}
                 />
               </View>
@@ -245,24 +226,19 @@ class Comment extends React.Component {
                   <TextInput
                     style={styles.description}
                     placeholder="Enter your comment..."
-                    onChangeText={value => {
+                    onChangeText={(value) => {
                       this.setState({ comment: value });
                     }}
-                    value={this.state.comment}
+                    value={comment}
                     autoCorrect={false}
-                    multiline={true}
+                    multiline
                     numberOfLines={8}
                   />
                 </View>
               </View>
             </View>
-            {this.state.traffic == 0 ? (
-              <View
-                style={[
-                  styles.formBlock,
-                  { justifyContent: 'center', marginTop: 50 }
-                ]}
-              >
+            {traffic === 0 ? (
+              <View style={[styles.formBlock, { justifyContent: 'center', marginTop: 50 }]}>
                 <Button title="Send" onPress={() => this.sendComment()} />
                 <Button
                   title="Cancel"
@@ -280,8 +256,8 @@ class Comment extends React.Component {
                     flex: 1,
                     textAlign: 'center',
                     color: statusColor,
-                    fontSize: 16
-                  }
+                    fontSize: 16,
+                  },
                 ]}
               >
                 &nbsp;&nbsp;&nbsp;
@@ -293,8 +269,8 @@ class Comment extends React.Component {
       </View>
     );
   }
-  viewEvent(id, lat, long) {
-    Actions.event({ event_id: id, lat: lat, long: long });
-  }
 }
+Comment.propTypes = {
+  eventId: PropTypes.number.isRequired,
+};
 export default Comment;

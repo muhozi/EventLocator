@@ -1,143 +1,135 @@
-'use strict';
 import React from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
   Text,
   View,
   TextInput,
-  TouchableHighlight,
   ScrollView,
   StatusBar,
-  NetInfo
+  NetInfo,
 } from 'react-native';
-import MapView from 'react-native-maps';
-import { Actions, Modal } from 'react-native-router-flux';
-import Styles from './../styles/Styles';
+import PropTypes from 'prop-types';
+import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Styles from '../styles/Styles';
+import Button from '../components/Form';
+
 class Reserve extends React.Component {
   state = {
     isConnected: null,
     responseMsg: '',
-    respoData: '',
     firstname: '',
     lastname: '',
     email: '',
     phone: '',
-    traffic: 0
+    traffic: 0,
   };
+
   componentWillMount() {}
+
   componentDidMount() {
-    NetInfo.isConnected.addEventListener(
-      'connectionChange',
-      this._handleConnectivityChange
-    );
-    NetInfo.isConnected.fetch().done(isConnected => {
+    NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    NetInfo.isConnected.fetch().done((isConnected) => {
       this.setState({ isConnected });
     });
   }
+
   componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener(
-      'connectionChange',
-      this._handleConnectivityChange
-    );
+    NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
   }
 
-  _handleConnectivityChange = isConnected => {
-    this.setState({
-      isConnected
-    });
-  };
   onLayout(e) {
     const {
       nativeEvent: {
-        layout: { height }
-      }
+        layout: { height },
+      },
     } = e;
     this.height = height;
     this.forceUpdate();
   }
+
+  handleConnectivityChange = (isConnected) => {
+    this.setState({
+      isConnected,
+    });
+  };
+
+  viewEvent = (id, lat, long) => Actions.event({ eventId: id, lat, long });
+
   validate() {
-    if (
-      this.state.firstname == '' ||
-      this.state.lastname == '' ||
-      this.state.email == '' ||
-      this.state.phone == ''
-    ) {
+    const {
+      firstname, lastname, email, phone,
+    } = this.state;
+    if (firstname === '' || lastname === '' || email === '' || phone === '') {
       this.setState({ responseMsg: 'Please fill all fields' });
       this.setState({ statusColor: 'red' });
       return false;
-    } else if (
-      /[^a-zA-Z ]/.test(this.state.firstname) ||
-      this.state.firstname.length < 2
-    ) {
+    }
+    if (/[^a-zA-Z ]/.test(firstname) || firstname.length < 2) {
       this.setState({ responseMsg: 'Please enter valid name (firsname)' });
       this.setState({ statusColor: 'red' });
       return false;
-    } else if (
-      /[^a-zA-Z ]/.test(this.state.lastname) ||
-      this.state.lastname.length < 2
-    ) {
+    }
+    if (/[^a-zA-Z ]/.test(lastname) || lastname.length < 2) {
       this.setState({ responseMsg: 'Please enter valid name (lastname)' });
       this.setState({ statusColor: 'red' });
       return false;
-    } else if (
-      !/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        this.state.email
+    }
+    if (
+      !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        email,
       )
     ) {
       this.setState({
         responseMsg: 'Please enter a valid email address',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else if (this.state.phone.length < 10) {
+    }
+    if (phone.length < 10) {
       this.setState({
-        responseMsg: 'Please enter a valid phone number \n (07XXXXXXXX)'
+        responseMsg: 'Please enter a valid phone number \n (07XXXXXXXX)',
       });
       this.setState({ statusColor: 'red' });
       return false;
-    } else if (
-      /[^0-9]/.test(this.state.phone) ||
-      this.state.phone.length !== 10
-    ) {
+    }
+    if (/[^0-9]/.test(phone) || phone.length !== 10) {
       this.setState({
         responseMsg: 'Please enter a valid phone number \n (07XXXXXXXX)',
-        statusColor: 'red'
+        statusColor: 'red',
       });
       return false;
-    } else {
-      this.setState({
-        statusColor: 'green',
-        responseMsg: 'Sending ...',
-        traffic: 1
-      });
-      return true;
     }
+    this.setState({
+      statusColor: 'green',
+      responseMsg: 'Sending ...',
+      traffic: 1,
+    });
+    return true;
   }
-  //Send Rservation to Serve API
+
   sendReservation() {
+    const {
+      firstname, lastname, email, phone, isConnected,
+    } = this.state;
+    const { eventId } = this.props;
     if (this.validate()) {
-      if (this.state.isConnected) {
-        fetch(
-          'http://eventlocate.herokuapp.com/api/reserve/' + this.props.event_id,
-          {
-            //fetch('http://192.168.244.2/EventLocator/public/api/reserve/'+this.props.event_id, {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              firstname: this.state.firstname,
-              lastname: this.state.lastname,
-              email: this.state.email,
-              phone: this.state.phone
-            })
-          }
-        )
+      if (isConnected) {
+        fetch(`http://eventlocate.herokuapp.com/api/reserve/${eventId}`, {
+          // fetch('http://192.168.244.2/EventLocator/public/api/reserve/'+this.props.event_id, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstname,
+            lastname,
+            email,
+            phone,
+          }),
+        })
           .then(response => response.json())
-          .then(responseData => {
+          .then((responseData) => {
             this.setState({
               firstname: '',
               lastname: '',
@@ -145,50 +137,44 @@ class Reserve extends React.Component {
               phone: '',
               responseMsg: responseData.message,
               statusColor: 'green',
-              traffic: 0
+              traffic: 0,
             });
           })
-          .catch(error => {
+          .catch(() => {
             this.setState({
               statusColor: 'rgba(255,0,0,1)',
               responseMsg: 'A problem occurs, Try again later.',
-              traffic: 0
+              traffic: 0,
             });
           })
           .done();
       } else {
         this.setState({
           responseMsg: 'Check your internet network \n and try again',
-          statusColor: 'red'
+          statusColor: 'red',
         });
       }
     }
   }
-  //Render View
+
   render() {
+    const styles = Styles;
+    const {
+      firstname, lastname, email, responseMsg, traffic, phone, statusColor,
+    } = this.state;
     return (
       <View
         style={{
           flex: 12,
           flexDirection: 'column',
-          backgroundColor: 'rgba(0,0,0,0)'
+          backgroundColor: 'rgba(0,0,0,0)',
         }}
       >
-        <StatusBar
-          backgroundColor="rgba(25, 43, 62, 0.9)"
-          barStyle="light-content"
-        />
+        <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" barStyle="light-content" />
         <ScrollView>
           <View style={{ flex: 4, flexDirection: 'column' }}>
-            <View
-              style={[
-                styles.formHeader,
-                { alignItems: 'center', justifyContent: 'center' }
-              ]}
-            >
-              <Text style={{ fontSize: 20, color: 'rgba(25, 43, 62, 0.9)' }}>
-                Reserve
-              </Text>
+            <View style={[styles.formHeader, { alignItems: 'center', justifyContent: 'center' }]}>
+              <Text style={{ fontSize: 20, color: 'rgba(25, 43, 62, 0.9)' }}>Reserve</Text>
             </View>
             <View style={[styles.formRow]}>
               <View style={styles.formLabel}>
@@ -201,10 +187,10 @@ class Reserve extends React.Component {
                   style={styles.formInputText}
                   placeholder="Firstname..."
                   underlineColorAndroid="rgba(25, 43, 62, 0.9)"
-                  onChangeText={fname => {
+                  onChangeText={(fname) => {
                     this.setState({ firstname: fname });
                   }}
-                  value={this.state.firstname}
+                  value={firstname}
                   autoCorrect={false}
                 />
               </View>
@@ -220,10 +206,10 @@ class Reserve extends React.Component {
                   style={styles.formInputText}
                   placeholder="Lastname..."
                   underlineColorAndroid="rgba(25, 43, 62, 0.9)"
-                  onChangeText={lname => {
+                  onChangeText={(lname) => {
                     this.setState({ lastname: lname });
                   }}
-                  value={this.state.lastname}
+                  value={lastname}
                   autoCorrect={false}
                 />
               </View>
@@ -239,10 +225,8 @@ class Reserve extends React.Component {
                   style={styles.formInputText}
                   placeholder="Email..."
                   underlineColorAndroid="rgba(25, 43, 62, 0.9)"
-                  onChangeText={email => {
-                    this.setState({ email: email });
-                  }}
-                  value={this.state.email}
+                  onChangeText={emailText => this.setState({ email: emailText })}
+                  value={email}
                   autoCorrect={false}
                 />
               </View>
@@ -258,66 +242,30 @@ class Reserve extends React.Component {
                   style={styles.formInputText}
                   placeholder="Phone number..."
                   underlineColorAndroid="rgba(25, 43, 62, 0.9)"
-                  onChangeText={phone => {
-                    this.setState({ phone: phone });
+                  onChangeText={(phoneText) => {
+                    this.setState({ phone: phoneText });
                   }}
-                  value={this.state.phone}
+                  value={phone}
                   autoCorrect={false}
                 />
               </View>
             </View>
 
-            {this.state.traffic == 0 ? (
-              <View
-                style={[
-                  styles.formRow,
-                  { justifyContent: 'center', marginTop: 50 }
-                ]}
-              >
-                <TouchableHighlight
-                  underlayColor="rgba(255,255,255,0.2)"
-                  style={{ borderRadius: 5 }}
+            {traffic === 0 ? (
+              <View style={[styles.formBlock, { justifyContent: 'center', marginTop: 50 }]}>
+                <Button
+                  title="Send"
                   onPress={() => {
                     this.sendReservation();
                   }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: 'rgba(25, 43, 62, 0.9)',
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      paddingLeft: 20,
-                      paddingRight: 20,
-                      borderRadius: 5,
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Text style={{ color: '#fff' }}>Reserve</Text>
-                  </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                  underlayColor="rgba(255,255,255,0.2)"
-                  style={{ borderRadius: 5, marginLeft: 20 }}
+                />
+                <Button
+                  title="Cancel"
                   onPress={() => {
                     Actions.pop();
                   }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: 'rgba(255, 50, 50, 1)',
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      paddingLeft: 20,
-                      paddingRight: 20,
-                      borderRadius: 5,
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Text style={{ color: '#fff' }}>Cancel</Text>
-                  </View>
-                </TouchableHighlight>
+                  danger
+                />
               </View>
             ) : null}
             <View style={[styles.status]}>
@@ -326,13 +274,13 @@ class Reserve extends React.Component {
                   {
                     flex: 1,
                     textAlign: 'center',
-                    color: this.state.statusColor,
-                    fontSize: 16
-                  }
+                    color: statusColor,
+                    fontSize: 16,
+                  },
                 ]}
               >
                 &nbsp;&nbsp;&nbsp;
-                {this.state.responseMsg}
+                {responseMsg}
               </Text>
             </View>
           </View>
@@ -340,9 +288,10 @@ class Reserve extends React.Component {
       </View>
     );
   }
-  viewEvent(id, lat, long) {
-    Actions.event({ event_id: id, lat: lat, long: long });
-  }
 }
-const styles = Styles;
+
+Reserve.propTypes = {
+  eventId: PropTypes.number.isRequired,
+};
+
 export default Reserve;
