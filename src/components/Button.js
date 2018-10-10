@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, View, TouchableHighlight } from 'react-native';
+import PropTypes from 'prop-types';
 import styles from '../styles/Styles';
-import values from '../styles/Values';
+import values from '../styles/Colors';
 
 const Button = (props) => {
   const { danger, title } = props;
@@ -17,6 +18,15 @@ const Button = (props) => {
       </View>
     </TouchableHighlight>
   );
+};
+
+Button.propTypes = {
+  danger: PropTypes.bool,
+  title: PropTypes.string.isRequired,
+};
+
+Button.defaultProps = {
+  danger: false,
 };
 
 export default Button;

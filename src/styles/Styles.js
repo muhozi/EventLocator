@@ -1,10 +1,15 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import values from './Values';
+import colors from './Colors';
 
 const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 0,
+    flexDirection: 'row',
+  },
   root: {
-    backgroundColor: values.active_color,
+    backgroundColor: colors.active_color,
   },
   splashContainer: {
     backgroundColor: '#fff',
@@ -15,7 +20,7 @@ const styles = StyleSheet.create({
   },
   map: {
     position: 'absolute',
-    top: 53,
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,
@@ -36,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    backgroundColor: values.active_color,
+    backgroundColor: colors.active_color,
     paddingTop: 10,
     paddingBottom: 20,
   },
@@ -44,11 +49,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     fontSize: 20,
     color: '#fff',
-  },
-  container: {
-    flex: 4,
-    backgroundColor: '#ffffff',
-    flexDirection: 'column',
   },
   header: {
     flex: 1,
@@ -58,12 +58,48 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: 20,
-    color: values.primary,
+    color: colors.primary,
   },
   body: {
     flex: 12,
     paddingTop: 25,
     paddingBottom: 100,
+  },
+  eventListRow: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  eventListRowTitle: {
+    fontWeight: 'bold',
+    color: 'rgba(25, 43, 62, 0.9)',
+  },
+  eventListRowDetails: {
+    paddingTop: 5,
+    color: 'rgba(25, 43, 62, 0.9)',
+  },
+  actionButtonContainer: {
+    flex: 5,
+    justifyContent: 'center',
+  },
+  mapMarker: {
+    backgroundColor: 'rgba(25, 43, 62, 0.4)',
+    height: 50,
+    width: 50,
+    borderRadius: 50 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(25, 43, 62, 0.9)',
+    overflow: 'hidden',
+  },
+  mapMarkerPoint: {
+    backgroundColor: 'rgba(25, 43, 62, 0.9)',
+    height: 20,
+    width: 20,
+    borderRadius: 20 / 2,
+    borderWidth: 1,
+    borderColor: '#fff',
   },
   status: {
     flexDirection: 'row',
@@ -84,14 +120,14 @@ const styles = StyleSheet.create({
     flex: 6,
     backgroundColor: '#fff',
     padding: 6,
-    paddingBottom: 1,
+    paddingBottom: 0,
     borderRadius: 4,
     borderWidth: 0.2,
     borderColor: '#607d8b',
     flexDirection: 'row',
     marginLeft: 20,
     marginRight: 30,
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 5,
   },
   descriptionContainer: {
@@ -105,6 +141,20 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.04)',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
+  },
+  formContainer: {
+    marginTop: 20,
+  },
+  actionsButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 15,
+    zIndex: 2000,
+    right: 0,
+    left: 0,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   description: {
     flex: 1,
@@ -121,13 +171,8 @@ const styles = StyleSheet.create({
   },
   formInputError: {
     flex: 6,
-    // borderColor: 'rgba(0,0,0,0.5)',
-    // borderWidth: 0.4,
     padding: 6,
     paddingLeft: 6,
-
-    // paddingBottom: 1,
-    // borderRadius: 5,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 0, 0, 1)',
     backgroundColor: 'rgba(0,0,0,0.04)',
@@ -147,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: values.active_color,
+    backgroundColor: colors.active_color,
   },
   buttonText: {
     color: '#fff',
@@ -175,14 +220,14 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    borderRadius: 5,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 20,
   },
   formHeader: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginTop: 80,
     marginBottom: 20,
   },
   formInput: {
@@ -208,5 +253,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
   },
+  detailsCard: {
+    margin: 30,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  detailsCardTitle: {
+    fontWeight: '600',
+    color: '#222',
+  },
+  detailsCardBody: {
+    fontSize: 16,
+    marginTop: 10,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 16,
+  },
 });
+
+export { colors };
 export default styles;

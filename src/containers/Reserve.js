@@ -1,17 +1,15 @@
 import React from 'react';
 import {
-  Text,
-  View,
-  TextInput,
-  ScrollView,
-  StatusBar,
-  NetInfo,
+  Text, View, TextInput, ScrollView, StatusBar, NetInfo,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Styles from '../styles/Styles';
-import Button from '../components/Form';
+import Button from '../components/Button';
+import DetailsCard from '../components/EventDetailsCard';
+import ErrorMessage from '../components/ErrorMessage';
+import apiUrl from '../utils';
 
 class Reserve extends React.Component {
   state = {
@@ -23,8 +21,6 @@ class Reserve extends React.Component {
     phone: '',
     traffic: 0,
   };
-
-  componentWillMount() {}
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -53,25 +49,23 @@ class Reserve extends React.Component {
     });
   };
 
-  viewEvent = (id, lat, long) => Actions.event({ eventId: id, lat, long });
-
   validate() {
     const {
       firstname, lastname, email, phone,
     } = this.state;
     if (firstname === '' || lastname === '' || email === '' || phone === '') {
       this.setState({ responseMsg: 'Please fill all fields' });
-      this.setState({ statusColor: 'red' });
+      this.setState({ error: true });
       return false;
     }
     if (/[^a-zA-Z ]/.test(firstname) || firstname.length < 2) {
       this.setState({ responseMsg: 'Please enter valid name (firsname)' });
-      this.setState({ statusColor: 'red' });
+      this.setState({ error: true });
       return false;
     }
     if (/[^a-zA-Z ]/.test(lastname) || lastname.length < 2) {
       this.setState({ responseMsg: 'Please enter valid name (lastname)' });
-      this.setState({ statusColor: 'red' });
+      this.setState({ error: true });
       return false;
     }
     if (
@@ -81,26 +75,20 @@ class Reserve extends React.Component {
     ) {
       this.setState({
         responseMsg: 'Please enter a valid email address',
-        statusColor: 'red',
+        error: true,
       });
       return false;
     }
-    if (phone.length < 10) {
+    if (/[^0-9]/.test(phone) || phone.length <= 10 || phone.length > 12) {
       this.setState({
-        responseMsg: 'Please enter a valid phone number \n (07XXXXXXXX)',
-      });
-      this.setState({ statusColor: 'red' });
-      return false;
-    }
-    if (/[^0-9]/.test(phone) || phone.length !== 10) {
-      this.setState({
-        responseMsg: 'Please enter a valid phone number \n (07XXXXXXXX)',
-        statusColor: 'red',
+        responseMsg:
+          'Please enter a valid phone number\n (Integers and length of 10 to 12)',
+        error: true,
       });
       return false;
     }
     this.setState({
-      statusColor: 'green',
+      error: false,
       responseMsg: 'Sending ...',
       traffic: 1,
     });
@@ -111,11 +99,12 @@ class Reserve extends React.Component {
     const {
       firstname, lastname, email, phone, isConnected,
     } = this.state;
-    const { eventId } = this.props;
+    const {
+      eventDetails: { id: eventId },
+    } = this.props;
     if (this.validate()) {
       if (isConnected) {
-        fetch(`http://eventlocate.herokuapp.com/api/reserve/${eventId}`, {
-          // fetch('http://192.168.244.2/EventLocator/public/api/reserve/'+this.props.event_id, {
+        fetch(`${apiUrl}/reserve/${eventId}`, {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -136,13 +125,13 @@ class Reserve extends React.Component {
               email: '',
               phone: '',
               responseMsg: responseData.message,
-              statusColor: 'green',
+              error: false,
               traffic: 0,
             });
           })
           .catch(() => {
             this.setState({
-              statusColor: 'rgba(255,0,0,1)',
+              error: true,
               responseMsg: 'A problem occurs, Try again later.',
               traffic: 0,
             });
@@ -151,7 +140,7 @@ class Reserve extends React.Component {
       } else {
         this.setState({
           responseMsg: 'Check your internet network \n and try again',
-          statusColor: 'red',
+          error: true,
         });
       }
     }
@@ -160,22 +149,14 @@ class Reserve extends React.Component {
   render() {
     const styles = Styles;
     const {
-      firstname, lastname, email, responseMsg, traffic, phone, statusColor,
+      firstname, lastname, email, responseMsg, traffic, phone, error,
     } = this.state;
+    const { eventDetails } = this.props;
     return (
-      <View
-        style={{
-          flex: 12,
-          flexDirection: 'column',
-          backgroundColor: 'rgba(0,0,0,0)',
-        }}
-      >
-        <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" barStyle="light-content" />
+      <View style={styles.container}>
+        <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" />
         <ScrollView>
-          <View style={{ flex: 4, flexDirection: 'column' }}>
-            <View style={[styles.formHeader, { alignItems: 'center', justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 20, color: 'rgba(25, 43, 62, 0.9)' }}>Reserve</Text>
-            </View>
+          <View style={styles.formContainer}>
             <View style={[styles.formRow]}>
               <View style={styles.formLabel}>
                 <Text style={styles.labelText}>
@@ -186,7 +167,6 @@ class Reserve extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Firstname..."
-                  underlineColorAndroid="rgba(25, 43, 62, 0.9)"
                   onChangeText={(fname) => {
                     this.setState({ firstname: fname });
                   }}
@@ -205,7 +185,6 @@ class Reserve extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Lastname..."
-                  underlineColorAndroid="rgba(25, 43, 62, 0.9)"
                   onChangeText={(lname) => {
                     this.setState({ lastname: lname });
                   }}
@@ -224,7 +203,6 @@ class Reserve extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Email..."
-                  underlineColorAndroid="rgba(25, 43, 62, 0.9)"
                   onChangeText={emailText => this.setState({ email: emailText })}
                   value={email}
                   autoCorrect={false}
@@ -241,7 +219,6 @@ class Reserve extends React.Component {
                 <TextInput
                   style={styles.formInputText}
                   placeholder="Phone number..."
-                  underlineColorAndroid="rgba(25, 43, 62, 0.9)"
                   onChangeText={(phoneText) => {
                     this.setState({ phone: phoneText });
                   }}
@@ -252,9 +229,9 @@ class Reserve extends React.Component {
             </View>
 
             {traffic === 0 ? (
-              <View style={[styles.formBlock, { justifyContent: 'center', marginTop: 50 }]}>
+              <View style={styles.formBlock}>
                 <Button
-                  title="Send"
+                  title="Reserve"
                   onPress={() => {
                     this.sendReservation();
                   }}
@@ -268,21 +245,10 @@ class Reserve extends React.Component {
                 />
               </View>
             ) : null}
-            <View style={[styles.status]}>
-              <Text
-                style={[
-                  {
-                    flex: 1,
-                    textAlign: 'center',
-                    color: statusColor,
-                    fontSize: 16,
-                  },
-                ]}
-              >
-                &nbsp;&nbsp;&nbsp;
-                {responseMsg}
-              </Text>
+            <View style={styles.status}>
+              <ErrorMessage message={responseMsg} danger={error} />
             </View>
+            <DetailsCard details={eventDetails} />
           </View>
         </ScrollView>
       </View>
@@ -290,8 +256,24 @@ class Reserve extends React.Component {
   }
 }
 
+const detailsStructure = {
+  id: PropTypes.number,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  date: PropTypes.string,
+  formatted_address: PropTypes.string,
+  locality: PropTypes.string,
+  state: PropTypes.string,
+  country: PropTypes.string,
+  administrative_area_level_1: PropTypes.oneOf(PropTypes.string, PropTypes.null),
+  lat: PropTypes.string,
+  lng: PropTypes.string,
+  host: PropTypes.string,
+  user_id: PropTypes.number,
+};
+
 Reserve.propTypes = {
-  eventId: PropTypes.number.isRequired,
+  eventDetails: PropTypes.shape(detailsStructure).isRequired,
 };
 
 export default Reserve;

@@ -1,33 +1,36 @@
 import React from 'react';
-import {
-  Text, View, TouchableHighlight, StatusBar,
-} from 'react-native';
+import { View, StatusBar } from 'react-native';
 import PropTypes from 'prop-types';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Actions } from 'react-native-router-flux';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Styles from '../styles/Styles';
+import styles from '../styles/Styles';
+import Button from '../components/Button';
+import DetailsCard from '../components/EventDetailsCard';
+
+const ActionsButtons = (props) => {
+  const {
+    eventDetails: { id: eventId },
+    eventDetails,
+  } = props;
+  return (
+    <View style={styles.actionsButtonsContainer}>
+      <View style={styles.actionButtonContainer}>
+        <Button
+          title="Reserve"
+          onPress={() => (eventId ? Actions.reserve({ eventDetails }) : null)}
+        />
+      </View>
+      <View style={styles.actionButtonContainer}>
+        <Button
+          title="Comment"
+          onPress={() => (eventId ? Actions.comment({ eventDetails }) : null)}
+        />
+      </View>
+    </View>
+  );
+};
 
 class SingleEvent extends React.Component {
-  state = {
-    eventData: '',
-  };
-
-  componentWillMount() {}
-
-  componentDidMount() {
-    const { eventId } = this.props;
-    fetch(`https://eventlocate.herokuapp.com/api/events/${eventId}`, { method: 'GET' })
-      .then(response => response.json())
-      .then((responseData) => {
-        this.setState({ eventData: responseData });
-      })
-      .catch(() => {
-        alert('Something went wrong!');
-      })
-      .done();
-  }
-
   onLayout(e) {
     const {
       nativeEvent: {
@@ -39,147 +42,50 @@ class SingleEvent extends React.Component {
   }
 
   render() {
-    const { eventData } = this.state;
-    const styles = Styles;
+    const {
+      eventDetails: { lat, lng, formatted_address: formattedAddress },
+      eventDetails,
+    } = this.props;
     return (
-      <View style={{ flex: 1, paddingTop: 0, flexDirection: 'row' }}>
+      <View style={styles.container}>
         <StatusBar
           backgroundColor="rgba(25, 43, 62, 0.9)"
           barStyle="light-content"
           StatusBarAnimation="slide"
         />
+        <ActionsButtons eventDetails={eventDetails} />
         <View
           style={{
-            backgroundColor: 'rgba(25, 43, 62, 0.9)',
-            flex: 1,
-            flexDirection: 'row',
-            height: 53,
+            position: 'absolute',
+            bottom: 50,
+            zIndex: 2000,
+            left: 0,
+            right: 0,
           }}
         >
-          <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 10 }}>
-            <TouchableHighlight
-              underlayColor="rgba(0,0,0,0)"
-              onPress={() => {
-                Actions.pop();
-              }}
-            >
-              <View>
-                <Text style={{ color: '#ffffff' }}>
-                  <Icon name="md-arrow-back" size={24} />
-                </Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-          <View style={{ flex: 9, justifyContent: 'center', flexDirection: 'row' }}>
-            <View
-              style={{
-                flex: 4,
-                justifyContent: 'center',
-                alignItems: 'flex-end',
-                paddingRight: 10,
-              }}
-            >
-              <TouchableHighlight
-                underlayColor="rgba(255,255,255,0.3)"
-                onPress={() => (
-                  eventData.id ? Actions.reserve({ eventId: eventData.id }) : null
-                )}
-                style={{ borderRadius: 5 }}
-              >
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 18,
-                    borderWidth: 0,
-                    borderRadius: 5,
-                    paddingTop: 5,
-                    paddingBottom: 5,
-                    backgroundColor: 'rgba(255,255,255,0.5)',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}
-                >
-                  Reserve
-                </Text>
-              </TouchableHighlight>
-            </View>
-
-            <View
-              style={{
-                flex: 5,
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                paddingLeft: 10,
-              }}
-            >
-              <TouchableHighlight
-                underlayColor="rgba(255,255,255,0.3)"
-                onPress={() => (
-                  eventData.id ? Actions.comment({ eventId: eventData.id }) : null
-                )}
-                style={{ borderRadius: 5 }}
-              >
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 18,
-                    borderWidth: 0,
-                    borderRadius: 5,
-                    paddingTop: 5,
-                    paddingBottom: 5,
-                    backgroundColor: 'rgba(255,255,255,0.5)',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}
-                >
-                  Comment
-                </Text>
-              </TouchableHighlight>
-            </View>
-          </View>
+          <DetailsCard details={eventDetails} />
         </View>
-        {eventData.lat ? (
+        {lat && lng ? (
           <MapView.Animated
             provider={PROVIDER_GOOGLE}
             style={styles.map}
             initialRegion={{
-              latitude: parseFloat(eventData.lat),
-              longitude: parseFloat(eventData.lng),
+              latitude: parseFloat(lat),
+              longitude: parseFloat(lng),
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
           >
             <MapView.Marker
               coordinate={{
-                longitude: parseFloat(eventData.lng),
-                latitude: parseFloat(eventData.lat),
+                longitude: parseFloat(lng),
+                latitude: parseFloat(lat),
               }}
               title="Location"
-              description={eventData.formatted_address}
+              description={formattedAddress}
             >
-              <View
-                style={{
-                  backgroundColor: 'rgba(25, 43, 62, 0.4)',
-                  height: 50,
-                  width: 50,
-                  borderRadius: 50 / 2,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderWidth: 1,
-                  borderColor: 'rgba(25, 43, 62, 0.9)',
-                  overflow: 'hidden',
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: 'rgba(25, 43, 62, 0.9)',
-                    height: 20,
-                    width: 20,
-                    borderRadius: 20 / 2,
-                    borderWidth: 1,
-                    borderColor: '#fff',
-                  }}
-                />
+              <View style={styles.mapMarker}>
+                <View style={styles.mapMarkerPoint} />
               </View>
             </MapView.Marker>
           </MapView.Animated>
@@ -189,8 +95,28 @@ class SingleEvent extends React.Component {
   }
 }
 
+const detailsStructure = {
+  id: PropTypes.number,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  date: PropTypes.string,
+  formatted_address: PropTypes.string,
+  locality: PropTypes.string,
+  state: PropTypes.string,
+  country: PropTypes.string,
+  administrative_area_level_1: PropTypes.oneOf(PropTypes.string, PropTypes.null),
+  lat: PropTypes.string,
+  lng: PropTypes.string,
+  host: PropTypes.string,
+  user_id: PropTypes.number,
+};
+
 SingleEvent.propTypes = {
-  eventId: PropTypes.number.isRequired,
+  eventDetails: PropTypes.shape(detailsStructure).isRequired,
+};
+
+ActionsButtons.propTypes = {
+  eventDetails: PropTypes.shape(detailsStructure).isRequired,
 };
 
 export default SingleEvent;

@@ -6,7 +6,10 @@ import PropTypes from 'prop-types';
 import { Actions } from 'react-native-router-flux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../styles/Styles';
-import Button from '../components/Form';
+import Button from '../components/Button';
+import DetailsCard from '../components/EventDetailsCard';
+import ErrorMessage from '../components/ErrorMessage';
+import apiUrl from '../utils';
 
 class Comment extends React.Component {
   state = {
@@ -16,11 +19,9 @@ class Comment extends React.Component {
     lastname: '',
     email: '',
     comment: '',
-    statusColor: 'green',
+    error: true,
     traffic: 0,
   };
-
-  componentWillMount() {}
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
@@ -56,21 +57,21 @@ class Comment extends React.Component {
     if (firstname === '' || lastname === '' || email === '' || comment === '') {
       this.setState({
         responseMsg: 'Please fill all fields',
-        statusColor: 'red',
+        error: true,
       });
       return false;
     }
     if (/[^a-zA-Z ]/.test(firstname) || firstname.length < 2) {
       this.setState({
         responseMsg: 'Please enter valid name (firsname)',
-        statusColor: 'red',
+        error: true,
       });
       return false;
     }
     if (/[^a-zA-Z ]/.test(lastname) || lastname.length < 2) {
       this.setState({
         responseMsg: 'Please enter valid name (lastname)',
-        statusColor: 'red',
+        error: true,
       });
       return false;
     }
@@ -81,19 +82,19 @@ class Comment extends React.Component {
     ) {
       this.setState({
         responseMsg: 'Please enter a valid email address',
-        statusColor: 'red',
+        error: true,
       });
       return false;
     }
-    if (comment.length < 10) {
+    if (comment.length < 3) {
       this.setState({
-        responseMsg: 'Please enter a valid comment \n at least 10 characters',
-        statusColor: 'red',
+        responseMsg: 'Please enter a valid comment \n at least 3 characters',
+        error: true,
       });
       return false;
     }
     this.setState({
-      statusColor: 'green',
+      error: false,
       responseMsg: 'Sending ...',
       traffic: 1,
     });
@@ -104,10 +105,12 @@ class Comment extends React.Component {
     const {
       firstname, lastname, email, comment, isConnected,
     } = this.state;
-    const { eventId } = this.props;
+    const {
+      eventDetails: { id: eventId },
+    } = this.props;
     if (this.validate()) {
       if (isConnected) {
-        fetch(`https://eventlocate.herokuapp.com/api/comment/${eventId}`, {
+        fetch(`${apiUrl}/comment/${eventId}`, {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -128,13 +131,13 @@ class Comment extends React.Component {
               email: '',
               comment: '',
               responseMsg: responseData.message,
-              statusColor: 'green',
+              error: false,
               traffic: 0,
             });
           })
           .catch(() => {
             this.setState({
-              statusColor: 'rgba(255,0,0,1)',
+              error: true,
               responseMsg: 'A problem occurs, Try again later.',
               traffic: 0,
             });
@@ -144,23 +147,21 @@ class Comment extends React.Component {
         this.setState({
           responseMsg: 'Check your internet network \n and try again',
         });
-        this.setState({ statusColor: 'red' });
+        this.setState({ error: true });
       }
     }
   }
 
   render() {
     const {
-      statusColor, responseMsg, firstname, lastname, email, comment, traffic,
+      error, responseMsg, firstname, lastname, email, comment, traffic,
     } = this.state;
+    const { eventDetails } = this.props;
     return (
-      <View style={styles.page}>
+      <View style={styles.container}>
         <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" barStyle="light-content" />
         <ScrollView>
-          <View style={{ flex: 4, flexDirection: 'column' }}>
-            <View style={styles.formBlock}>
-              <Text style={styles.header}>Comment on the event</Text>
-            </View>
+          <View style={styles.formContainer}>
             <View style={styles.formRow}>
               <View style={styles.formLabel}>
                 <Text style={styles.labelText}>
@@ -238,7 +239,7 @@ class Comment extends React.Component {
               </View>
             </View>
             {traffic === 0 ? (
-              <View style={[styles.formBlock, { justifyContent: 'center', marginTop: 50 }]}>
+              <View style={styles.formBlock}>
                 <Button title="Send" onPress={() => this.sendComment()} />
                 <Button
                   title="Cancel"
@@ -249,28 +250,35 @@ class Comment extends React.Component {
                 />
               </View>
             ) : null}
-            <View style={[styles.status]}>
-              <Text
-                style={[
-                  {
-                    flex: 1,
-                    textAlign: 'center',
-                    color: statusColor,
-                    fontSize: 16,
-                  },
-                ]}
-              >
-                &nbsp;&nbsp;&nbsp;
-                {responseMsg}
-              </Text>
+            <View style={styles.status}>
+              <ErrorMessage message={responseMsg} danger={error} />
             </View>
+            <DetailsCard details={eventDetails} />
           </View>
         </ScrollView>
       </View>
     );
   }
 }
-Comment.propTypes = {
-  eventId: PropTypes.number.isRequired,
+
+const detailsStructure = {
+  id: PropTypes.number,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  date: PropTypes.string,
+  formatted_address: PropTypes.string,
+  locality: PropTypes.string,
+  state: PropTypes.string,
+  country: PropTypes.string,
+  administrative_area_level_1: PropTypes.oneOf(PropTypes.string, PropTypes.null),
+  lat: PropTypes.string,
+  lng: PropTypes.string,
+  host: PropTypes.string,
+  user_id: PropTypes.number,
 };
+
+Comment.propTypes = {
+  eventDetails: PropTypes.shape(detailsStructure).isRequired,
+};
+
 export default Comment;

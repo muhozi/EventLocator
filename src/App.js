@@ -1,7 +1,3 @@
-/**
- * TODO: Refactor codes
- *
- */
 import React from 'react';
 import { Router, Scene, ActionConst } from 'react-native-router-flux';
 import { setCustomTextInput } from 'react-native-global-props';
@@ -10,6 +6,7 @@ import Events from './containers/Events';
 import SingleEvent from './containers/SingleEvent';
 import Reserve from './containers/Reserve';
 import Comment from './containers/Comment';
+import { colors } from './styles/Styles';
 
 const customTextInputProps = {
   underlineColorAndroid: 'rgba(0,0,0,0)',
@@ -33,7 +30,7 @@ const App = () => (
         titleStyle={{ color: '#ffffff', fontSize: 18 }}
         navigationBarStyle={{
           borderBottomWidth: 0,
-          backgroundColor: 'rgba(25, 43, 62, 0.9)',
+          backgroundColor: colors.primary,
         }}
         animation="fade"
         type={ActionConst.RESET}
@@ -41,31 +38,44 @@ const App = () => (
       <Scene
         key="event"
         title="Event details"
-        hideNavBar
         component={SingleEvent}
         titleStyle={{ color: '#ffffff', fontSize: 18 }}
         navigationBarStyle={{
           borderBottomWidth: 0,
-          backgroundColor: 'rgba(25, 43, 62, 0.9)',
+          backgroundColor: colors.primary,
         }}
         animation="fade"
+        navBarButtonColor="#fff"
+        leftButtonTextStyle={{ color: '#fff' }}
       />
       <Scene
         key="reserve"
         title="Reserve"
-        hideNavBar
         direction="vertical"
         component={Reserve}
+        titleStyle={{ color: '#ffffff', fontSize: 18 }}
+        navigationBarStyle={{
+          borderBottomWidth: 0,
+          backgroundColor: colors.primary,
+        }}
         schema="modal"
+        navBarButtonColor="#fff"
+        leftButtonTextStyle={{ color: '#fff' }}
       />
       <Scene
         key="comment"
         title="Comment"
-        hideNavBar
         renderBackButton={() => null}
         direction="vertical"
         component={Comment}
+        titleStyle={{ color: '#ffffff', fontSize: 18 }}
+        navigationBarStyle={{
+          borderBottomWidth: 0,
+          backgroundColor: colors.primary,
+        }}
         schema="modal"
+        navBarButtonColor="#fff"
+        leftButtonTextStyle={{ color: '#fff' }}
       />
     </Scene>
   </Router>
