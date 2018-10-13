@@ -11,16 +11,11 @@ import apiUrl from '../utils';
 class Events extends React.Component {
   state = {
     events: '',
+    refreshingEvents: false,
   };
 
   componentDidMount() {
-    fetch(`${apiUrl}/events`, { method: 'GET' })
-      .then(response => response.json())
-      .then((events) => {
-        this.setState({ events });
-      })
-      .catch(() => alert('Something went wrong!'))
-      .done();
+    this.fetchEvents();
   }
 
   onLayout(e) {
@@ -33,10 +28,25 @@ class Events extends React.Component {
     this.forceUpdate();
   }
 
+  fetchEvents = () => {
+    fetch(`${apiUrl}/events`, { method: 'GET' })
+      .then(response => response.json())
+      .then((events) => {
+        this.setState({ events, refreshingEvents: false });
+      })
+      .catch(() => alert('Something went wrong!'))
+      .done();
+  };
+
+  refreshEvents = () => {
+    this.setState({ refreshingEvents: true });
+    this.fetchEvents();
+  };
+
   viewEvent = eventDetails => Actions.event({ eventDetails });
 
   render() {
-    const { events } = this.state;
+    const { events, refreshingEvents } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="rgba(25, 43, 62, 0.9)" barStyle="light-content" />
@@ -44,6 +54,8 @@ class Events extends React.Component {
           <FlatList
             data={events}
             keyExtractor={event => String(event.id)}
+            refreshing={refreshingEvents}
+            onRefresh={this.refreshEvents}
             renderItem={({ item: event }) => (
               <TouchableHighlight
                 onPress={() => this.viewEvent(event)}
